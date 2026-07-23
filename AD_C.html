@@ -1,0 +1,2408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Apex Dynamics · 前沿计算与智能系统</title>
+    <script src="https://cdn.emailjs.com/dist/email.min.js">
+    </script>
+    <style>
+        /* ===== 全局重置 ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        :root {
+            --primary: #0b1a2e;
+            --secondary: #1c2e44;
+            --accent: #2a6d9c;
+            --accent-light: #4a8fc7;
+            --gray-100: #f0f4f8;
+            --gray-200: #d9e2ec;
+            --gray-400: #9fb3c8;
+            --gray-600: #62748c;
+            --gray-800: #243b53;
+            --gray-900: #102a43;
+            --white: #ffffff;
+            --shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            --radius: 4px;
+            --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --nav-height: 64px;
+        }
+        html,
+        body {
+            height: 100%;
+            font-family: var(--font);
+            background: var(--gray-100);
+            color: var(--gray-900);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+        a {
+            color: var(--accent);
+            text-decoration: none;
+            cursor: pointer;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 32px;
+        }
+
+        /* ===== 顶部导航 ===== */
+        .topbar {
+            background: var(--primary);
+            color: var(--white);
+            height: var(--nav-height);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+        }
+        .topbar .container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            flex-wrap: nowrap;
+        }
+        .logo {
+            font-size: 22px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .logo svg {
+            width: 28px;
+            height: 28px;
+            fill: var(--accent-light);
+        }
+        .logo span {
+            color: var(--white);
+        }
+        .logo .tagline {
+            font-size: 12px;
+            font-weight: 400;
+            color: var(--gray-400);
+            margin-left: 12px;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+        .nav-links {
+            display: flex;
+            gap: 24px;
+            align-items: center;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            flex: 1;
+            justify-content: flex-end;
+        }
+        .nav-links::-webkit-scrollbar {
+            display: none;
+        }
+        .nav-links a {
+            color: var(--gray-200);
+            font-size: 14px;
+            font-weight: 500;
+            transition: color 0.2s;
+            border-bottom: 2px solid transparent;
+            padding-bottom: 4px;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--white);
+            border-bottom-color: var(--accent-light);
+            text-decoration: none;
+        }
+        .nav-links .user-area {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-shrink: 0;
+            margin-left: 8px;
+        }
+        .nav-links .user-area .user-name {
+            font-size: 14px;
+            color: var(--gray-400);
+            white-space: nowrap;
+        }
+        .nav-links .user-area .user-name strong {
+            color: var(--white);
+            font-weight: 500;
+        }
+        .btn {
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: transparent;
+            color: var(--gray-200);
+            font-family: var(--font);
+            white-space: nowrap;
+        }
+        .btn-primary {
+            background: var(--accent);
+            color: var(--white);
+            border-color: var(--accent);
+        }
+        .btn-primary:hover {
+            background: var(--accent-light);
+            border-color: var(--accent-light);
+            text-decoration: none;
+        }
+        .btn-outline {
+            border-color: var(--gray-600);
+            color: var(--gray-200);
+        }
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--gray-400);
+        }
+        .btn-sm {
+            padding: 4px 14px;
+            font-size: 12px;
+        }
+
+        /* ===== 主内容 ===== */
+        .main-content {
+            min-height: calc(100vh - var(--nav-height) - 200px);
+        }
+        .page {
+            display: none;
+            padding: 48px 0 60px;
+            animation: fadeIn 0.3s ease;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===== 首页 ===== */
+        .hero {
+            text-align: center;
+            padding: 40px 0 32px;
+        }
+        .hero h1 {
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: -1px;
+            color: var(--primary);
+            margin-bottom: 12px;
+            line-height: 1.2;
+        }
+        .hero p {
+            font-size: 18px;
+            color: var(--gray-600);
+            max-width: 720px;
+            margin: 0 auto 28px;
+            line-height: 1.7;
+        }
+
+        /* ===== 卡片 ===== */
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 28px;
+            margin-top: 28px;
+        }
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            margin-top: 20px;
+        }
+        .card {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 24px 28px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            transition: box-shadow 0.2s, transform 0.15s;
+            cursor: pointer;
+        }
+        .card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+            transform: translateY(-2px);
+        }
+        .card h3 {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--primary);
+        }
+        .card p {
+            color: var(--gray-600);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+        .card .meta {
+            font-size: 12px;
+            color: var(--gray-400);
+            margin-top: 10px;
+        }
+
+        /* ===== 文章详情视图 ===== */
+        .article-view {
+            display: none;
+            padding: 32px 0 60px;
+            animation: fadeIn 0.3s ease;
+        }
+        .article-view.active {
+            display: block;
+        }
+        .article-view .back-link {
+            display: inline-block;
+            margin-bottom: 24px;
+            color: var(--gray-600);
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .article-view .back-link:hover {
+            color: var(--accent);
+            text-decoration: none;
+        }
+        .article-view .article-header {
+            margin-bottom: 24px;
+        }
+        .article-view .article-header h1 {
+            font-size: 34px;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+            line-height: 1.2;
+        }
+        .article-view .article-header .byline {
+            color: var(--gray-600);
+            font-size: 14px;
+            margin-top: 6px;
+        }
+        .article-view .article-body {
+            font-size: 16px;
+            line-height: 1.9;
+            color: var(--gray-800);
+            max-width: 820px;
+        }
+        .article-view .article-body p {
+            margin-bottom: 16px;
+        }
+        .article-view .article-body h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-top: 28px;
+            margin-bottom: 12px;
+        }
+        .article-view .article-body h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-top: 20px;
+            margin-bottom: 8px;
+        }
+        .article-view .article-body ul,
+        .article-view .article-body ol {
+            margin-left: 24px;
+            margin-bottom: 16px;
+        }
+        .article-view .article-body li {
+            margin-bottom: 6px;
+        }
+        .article-view .article-body .highlight-box {
+            background: var(--gray-100);
+            padding: 16px 20px;
+            border-left: 4px solid var(--accent);
+            border-radius: 0 var(--radius) var(--radius) 0;
+            margin: 20px 0;
+            font-size: 15px;
+        }
+        .article-view .article-body .code-block {
+            background: #0d1a2b;
+            color: #d4e6f0;
+            padding: 16px 20px;
+            border-radius: var(--radius);
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin: 16px 0;
+            white-space: pre-wrap;
+        }
+        .article-view .article-body .term {
+            color: var(--accent);
+            font-weight: 500;
+            border-bottom: 1px dashed var(--gray-400);
+            cursor: help;
+        }
+
+        /* ===== 普通内容块 ===== */
+        .content-block {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 28px 32px;
+            margin-bottom: 24px;
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow);
+        }
+        .content-block h2 {
+            font-size: 26px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+        .content-block p {
+            color: var(--gray-600);
+            margin-bottom: 10px;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+        .content-block ul {
+            margin-left: 20px;
+            color: var(--gray-600);
+            font-size: 15px;
+        }
+        .content-block ul li {
+            margin-bottom: 6px;
+        }
+
+        /* ===== 登录/注册（含邮箱） ===== */
+        .auth-container {
+            max-width: 480px;
+            margin: 20px auto;
+            background: var(--white);
+            padding: 40px 44px;
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow);
+        }
+        .auth-container h2 {
+            font-size: 26px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--primary);
+        }
+        .auth-container .sub {
+            color: var(--gray-600);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        .form-group {
+            margin-bottom: 18px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--gray-800);
+            margin-bottom: 4px;
+        }
+        .form-group label .required {
+            color: #b91c1c;
+            margin-left: 2px;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            font-size: 14px;
+            font-family: var(--font);
+            background: var(--white);
+            color: var(--gray-900);
+            transition: border 0.2s;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(42, 109, 156, 0.15);
+        }
+        .form-group .captcha-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--gray-100);
+            padding: 8px 14px;
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-200);
+            cursor: pointer;
+            user-select: none;
+        }
+        .form-group .captcha-box .check {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--gray-400);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            color: transparent;
+            transition: all 0.2s;
+        }
+        .form-group .captcha-box .check.checked {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+        .form-group .captcha-box .label {
+            font-size: 13px;
+            color: var(--gray-600);
+        }
+        .form-error {
+            color: #b91c1c;
+            font-size: 13px;
+            margin-top: 4px;
+            display: none;
+        }
+        .form-error.show {
+            display: block;
+        }
+        .auth-toggle {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+        .auth-toggle a {
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* ===== 员工入口（仅手机） ===== */
+        .employee-link-mobile {
+            display: none;
+            text-align: center;
+            padding: 20px 0 10px;
+            border-top: 1px solid var(--gray-200);
+            margin-top: 32px;
+        }
+        .employee-link-mobile a {
+            display: inline-block;
+            padding: 8px 28px;
+            border: 1px solid var(--gray-400);
+            border-radius: var(--radius);
+            color: var(--gray-600);
+            font-size: 13px;
+            background: var(--white);
+            cursor: pointer;
+        }
+        .employee-link-mobile a:hover {
+            background: var(--gray-100);
+            text-decoration: none;
+        }
+
+        /* ===== 模态框 ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-box {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 32px 36px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+        .modal-box .close {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray-400);
+            background: none;
+            border: none;
+            line-height: 1;
+        }
+        .modal-box h3 {
+            font-size: 22px;
+            margin-bottom: 6px;
+        }
+        .modal-box p {
+            font-size: 14px;
+            color: var(--gray-600);
+            margin-bottom: 20px;
+        }
+        .modal-box .form-group {
+            margin-bottom: 14px;
+        }
+
+        /* ===== 内部系统 ===== */
+        .internal-dashboard {
+            background: var(--white);
+            border-radius: var(--radius);
+            padding: 24px 28px;
+            margin-bottom: 24px;
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow);
+        }
+        .internal-dashboard h2 {
+            font-size: 24px;
+            margin-bottom: 6px;
+        }
+        .internal-dashboard .sub {
+            color: var(--gray-600);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .dashboard-card {
+            background: var(--gray-100);
+            border-radius: var(--radius);
+            padding: 14px 18px;
+            border-left: 4px solid var(--accent);
+        }
+        .dashboard-card .label {
+            font-size: 11px;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .dashboard-card .value {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        /* 终端 */
+        .terminal {
+            background: #0d1a2b;
+            color: #d4e6f0;
+            border-radius: var(--radius);
+            padding: 18px 22px;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            border: 1px solid #2a3a5a;
+            margin-top: 10px;
+            max-height: 320px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .terminal .prompt {
+            color: #5a9cff;
+        }
+        .terminal .input-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .terminal .input-line input {
+            background: transparent;
+            border: none;
+            color: #d4e6f0;
+            font-family: inherit;
+            font-size: 14px;
+            outline: none;
+            flex: 1;
+            caret-color: #5a9cff;
+        }
+        .terminal .output .error {
+            color: #f28b82;
+        }
+        .terminal .output .success {
+            color: #81c995;
+        }
+
+        /* 文件浏览器 */
+        .file-browser {
+            background: var(--white);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 14px;
+            margin-top: 10px;
+        }
+        .file-browser .file-item {
+            padding: 5px 12px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        .file-browser .file-item:hover {
+            background: var(--gray-100);
+        }
+        .file-browser .file-item .name {
+            font-weight: 500;
+        }
+        .file-browser .file-item .size {
+            color: var(--gray-400);
+            font-size: 12px;
+        }
+        .file-browser .file-content {
+            background: var(--gray-100);
+            padding: 14px 18px;
+            border-radius: var(--radius);
+            margin-top: 10px;
+            font-family: 'Fira Code', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            display: none;
+            border: 1px solid var(--gray-200);
+        }
+        .file-browser .file-content.active {
+            display: block;
+        }
+
+        .internal-doc {
+            background: #f8fafc;
+            border-left: 4px solid var(--accent);
+            padding: 24px 28px;
+            border-radius: 0 var(--radius) var(--radius) 0;
+            margin: 24px 0;
+            border: 1px solid var(--gray-200);
+            border-left-width: 6px;
+        }
+        .internal-doc h3 {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+        .internal-doc .redacted {
+            background: #1a1a1a;
+            color: #1a1a1a;
+            padding: 0 4px;
+            border-radius: 2px;
+            cursor: help;
+            transition: color 0.3s;
+        }
+        .internal-doc .redacted:hover {
+            color: #f0f0f0;
+        }
+
+        /* ===== 邮箱页面 ===== */
+        .mailbox-container {
+            max-width: 860px;
+            margin: 0 auto;
+            background: var(--white);
+            border-radius: var(--radius);
+            border: 1px solid var(--gray-200);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .mailbox-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid var(--gray-200);
+            background: var(--gray-100);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .mailbox-header h2 {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        .mailbox-header .badge {
+            background: var(--accent);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        .mail-list {
+            padding: 0;
+        }
+        .mail-item {
+            padding: 14px 24px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .mail-item:hover {
+            background: var(--gray-100);
+        }
+        .mail-item .sender {
+            font-weight: 600;
+            min-width: 140px;
+            color: var(--gray-800);
+        }
+        .mail-item .subject {
+            flex: 1;
+            color: var(--gray-800);
+        }
+        .mail-item .date {
+            font-size: 12px;
+            color: var(--gray-400);
+            white-space: nowrap;
+        }
+        .mail-item.unread .subject {
+            font-weight: 600;
+        }
+        .mail-item .tag-unread {
+            background: var(--accent);
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .mail-view {
+            padding: 24px 28px;
+            display: none;
+            border-top: 1px solid var(--gray-200);
+        }
+        .mail-view.active {
+            display: block;
+        }
+        .mail-view .mail-meta {
+            margin-bottom: 20px;
+        }
+        .mail-view .mail-meta .from {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .mail-view .mail-meta .date {
+            color: var(--gray-400);
+            font-size: 13px;
+        }
+        .mail-view .mail-subject {
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+        .mail-view .mail-body {
+            font-size: 15px;
+            line-height: 1.8;
+            color: var(--gray-800);
+        }
+        .mail-view .mail-body p {
+            margin-bottom: 12px;
+        }
+        .mail-view .mail-actions {
+            margin-top: 24px;
+            display: flex;
+            gap: 12px;
+            border-top: 1px solid var(--gray-200);
+            padding-top: 20px;
+            flex-wrap: wrap;
+        }
+        .mail-view .mail-actions .btn {
+            color: var(--gray-800);
+            border-color: var(--gray-200);
+            background: var(--white);
+        }
+        .mail-view .mail-actions .btn:hover {
+            background: var(--gray-100);
+        }
+        .mail-view .mail-actions .btn:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+
+        .mail-back {
+            display: inline-block;
+            margin-bottom: 16px;
+            color: var(--gray-600);
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .mail-back:hover {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        /* ===== 邮件通知弹窗 ===== */
+        .mail-notification {
+            display: none;
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--white);
+            border-radius: var(--radius);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid var(--gray-200);
+            padding: 16px 24px;
+            max-width: 360px;
+            z-index: 3000;
+            cursor: pointer;
+            animation: slideUp 0.4s ease;
+        }
+        .mail-notification.show {
+            display: block;
+        }
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .mail-notification .title {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: 15px;
+        }
+        .mail-notification .preview {
+            color: var(--gray-600);
+            font-size: 13px;
+            margin-top: 2px;
+        }
+        .mail-notification .icon {
+            font-size: 20px;
+            margin-right: 10px;
+        }
+
+        /* ===== 发送中状态 ===== */
+        .sending-indicator {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            background: var(--gray-100);
+            border-radius: var(--radius);
+            margin-top: 12px;
+            font-size: 14px;
+            color: var(--gray-600);
+        }
+        .sending-indicator.show {
+            display: flex;
+        }
+        .sending-indicator .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid var(--gray-200);
+            border-top: 2px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ===== 页脚 ===== */
+        .footer {
+            background: var(--primary);
+            color: var(--gray-400);
+            padding: 32px 0 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 13px;
+            margin-top: 40px;
+        }
+        .footer .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .footer .col {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .footer .col strong {
+            color: var(--white);
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        .footer .col a {
+            color: var(--gray-400);
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .footer .col a:hover {
+            color: var(--white);
+            text-decoration: none;
+        }
+        .footer .copy {
+            width: 100%;
+            text-align: center;
+            color: var(--gray-600);
+            font-size: 12px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            margin-top: 10px;
+        }
+        .footer .tiny {
+            font-size: 10px;
+            color: var(--gray-600);
+            text-align: center;
+            width: 100%;
+            letter-spacing: 0.5px;
+            margin-top: 4px;
+        }
+
+        /* ===== 响应式 ===== */
+        @media (max-width:1024px) {
+            .container {
+                padding: 0 24px;
+            }
+            .nav-links {
+                gap: 16px;
+            }
+        }
+        @media (max-width:768px) {
+            .topbar .container {
+                flex-wrap: wrap;
+                height: auto;
+                padding: 10px 16px;
+            }
+            .topbar {
+                height: auto;
+                min-height: 56px;
+            }
+            .logo .tagline {
+                display: none;
+            }
+            .nav-links {
+                gap: 10px;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                padding: 4px 0;
+                justify-content: flex-start;
+                width: 100%;
+                order: 3;
+            }
+            .nav-links a {
+                font-size: 12px;
+            }
+            .nav-links .user-area {
+                margin-left: auto;
+                order: 2;
+            }
+            .hero h1 {
+                font-size: 28px;
+            }
+            .hero p {
+                font-size: 16px;
+            }
+            .grid-3,
+            .grid-4 {
+                grid-template-columns: 1fr;
+            }
+            .auth-container {
+                padding: 24px 20px;
+                margin: 10px;
+            }
+            .page {
+                padding: 20px 0;
+            }
+            .employee-link-mobile {
+                display: block;
+            }
+            .content-block {
+                padding: 18px 20px;
+            }
+            .modal-box {
+                padding: 20px;
+            }
+            .terminal {
+                font-size: 12px;
+                padding: 14px 16px;
+            }
+            .article-view .article-header h1 {
+                font-size: 26px;
+            }
+            .mail-item {
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .mail-item .sender {
+                min-width: 100px;
+                font-size: 13px;
+            }
+            .mail-item .subject {
+                font-size: 13px;
+            }
+            .mail-notification {
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+            .mail-view .mail-actions {
+                flex-direction: column;
+            }
+            .mail-view .mail-actions .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+        @media (max-width:480px) {
+            .hero h1 {
+                font-size: 24px;
+            }
+            .nav-links a {
+                font-size: 11px;
+            }
+            .btn {
+                font-size: 11px;
+                padding: 4px 12px;
+            }
+            .container {
+                padding: 0 14px;
+            }
+            .mailbox-header h2 {
+                font-size: 17px;
+            }
+            .mail-item .sender {
+                min-width: 70px;
+                font-size: 12px;
+            }
+            .mail-item .subject {
+                font-size: 12px;
+            }
+            .mail-view {
+                padding: 16px;
+            }
+            .mail-view .mail-subject {
+                font-size: 18px;
+            }
+        }
+
+        /* ===== 内部导航隐藏 ===== */
+        .nav-links a[data-page="internal"] {
+            display: none;
+        }
+        .nav-links a[data-page="internal"].visible {
+            display: inline-block;
+        }
+        .nav-links a[data-page="mailbox"] {
+            display: none;
+        }
+        .nav-links a[data-page="mailbox"].visible {
+            display: inline-block;
+        }
+
+        /* ===== 设备差异化 ===== */
+        .desktop-only {
+            display: block;
+        }
+        .mobile-only {
+            display: none;
+        }
+        @media (max-width:768px) {
+            .desktop-only {
+                display: none;
+            }
+            .mobile-only {
+                display: block;
+            }
+        }
+
+        /* ===== 缩放线索 ===== */
+        .zoom-clue {
+            font-size: 1px;
+            color: transparent;
+            line-height: 1px;
+            height: 1px;
+            overflow: hidden;
+            white-space: nowrap;
+            width: 100%;
+            user-select: none;
+        }
+
+        /* ===== 下载按钮 ===== */
+        .download-link {
+            display: inline-block;
+            padding: 4px 16px;
+            background: var(--gray-200);
+            border-radius: var(--radius);
+            color: var(--gray-800);
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            font-family: var(--font);
+        }
+        .download-link:hover {
+            background: var(--gray-400);
+            text-decoration: none;
+        }
+
+        /* ===== 隐藏ID元素 ===== */
+        .hidden-id {
+            height: 0;
+            overflow: hidden;
+            white-space: nowrap;
+            font-size: 0;
+            line-height: 0;
+        }
+
+        /* ===== 邮件发送成功提示 ===== */
+        .mail-sent-toast {
+            display: none;
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0b1a2e;
+            color: white;
+            padding: 16px 32px;
+            border-radius: var(--radius);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            z-index: 4000;
+            text-align: center;
+            max-width: 90%;
+            border-left: 4px solid #4ade80;
+        }
+        .mail-sent-toast.show {
+            display: block;
+            animation: slideDown 0.4s ease;
+        }
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+        .mail-sent-toast .toast-title {
+            font-weight: 600;
+            font-size: 16px;
+        }
+        .mail-sent-toast .toast-sub {
+            font-size: 13px;
+            color: var(--gray-400);
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== 顶部导航 ===== -->
+    <header class="topbar">
+        <div class="container">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" width="28" height="28"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                <span>Apex Dynamics</span>
+                <span class="tagline">计算 · 智能 · 未来</span>
+            </div>
+            <nav class="nav-links" id="navLinks">
+                <a data-page="home" class="active">首页</a>
+                <a data-page="products">产品</a>
+                <a data-page="solutions">解决方案</a>
+                <a data-page="about">关于</a>
+                <a data-page="news">新闻</a>
+                <a data-page="blog">博客</a>
+                <a data-page="support">支持</a>
+                <a data-page="internal" id="internalNavLink">内部系统</a>
+                <a data-page="mailbox" id="mailboxNavLink">📧 邮箱</a>
+                <div class="user-area" id="userArea">
+                    <span class="user-name" id="userDisplay">访客</span>
+                    <button class="btn btn-primary btn-sm" id="authBtn">登录</button>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <div class="main-content">
+
+        <!-- ===== 首页 ===== -->
+        <section class="page active" id="page-home">
+            <div class="container">
+                <div class="hero">
+                    <h1>驱动下一个计算时代</h1>
+                    <p>Apex Dynamics 致力于构建新一代计算基础设施，融合量子计算、神经形态芯片与先进AI算法，为科研、工业与商业提供前所未有的智能动力。</p>
+                </div>
+                <div class="grid-3">
+                    <div class="card" data-article="quantum"><h3>拓扑量子计算</h3><p>基于马约拉纳费米子的容错量子计算架构。</p><div class="meta">阅读全文 →</div></div>
+                    <div class="card" data-article="neuromorphic"><h3>神经形态计算</h3><p>脉冲神经网络与Nyx芯片：仿生架构的能效革命。</p><div class="meta">阅读全文 →</div></div>
+                    <div class="card" data-article="neuralbridge"><h3>NeuralBridge 脑机接口</h3><p>高带宽双向神经接口，实现意念控制与神经康复。</p><div class="meta">阅读全文 →</div></div>
+                    <div class="card" data-article="ccp"><h3>意识数字化与CCP协议</h3><p>意识连续性协议：从哲学到工程的跨越。</p><div class="meta">阅读全文 →</div></div>
+                    <div class="card" data-article="chimera"><h3>Project Chimera 实验报告</h3><p>意识映射实验的突破与警示。</p><div class="meta">阅读全文 →</div></div>
+                    <div class="card" data-article="quantum-software"><h3>量子软件栈与编译优化</h3><p>从量子电路到经典后处理：全栈优化技术。</p><div class="meta">阅读全文 →</div></div>
+                </div>
+                <div style="margin-top:48px;font-size:11px;color:var(--gray-400);text-align:center;border-top:1px solid var(--gray-200);padding-top:18px;">
+                    <span>固件版本 2.6.1 · 编译 ID: APEX-DYN-2026</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 产品 ===== -->
+        <section class="page" id="page-products">
+            <div class="container">
+                <h2 style="font-size:32px;font-weight:700;color:var(--primary);margin-bottom:6px;">产品系列</h2>
+                <p style="color:var(--gray-600);font-size:17px;margin-bottom:32px;">从芯片到算法，全栈式智能计算。</p>
+                <div class="grid-3">
+                    <div class="card" data-article="quantum"><h3>QuantumCore™</h3><p>企业级量子计算云平台。</p><div class="meta">阅读 →</div></div>
+                    <div class="card" data-article="neuromorphic"><h3>Nyx 神经形态芯片</h3><p>脉冲神经网络架构，10 TOPS/W。</p><div class="meta">阅读 →</div></div>
+                    <div class="card" data-article="neuralbridge"><h3>NeuralBridge 脑机接口</h3><p>非侵入式高密度电极阵列。</p><div class="meta">阅读 →</div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 解决方案 ===== -->
+        <section class="page" id="page-solutions">
+            <div class="container">
+                <h2 style="font-size:32px;font-weight:700;color:var(--primary);margin-bottom:6px;">行业解决方案</h2>
+                <p style="color:var(--gray-600);font-size:17px;margin-bottom:32px;">为不同领域提供定制化智能引擎。</p>
+                <div class="grid-4">
+                    <div class="card" data-article="quantum"><h3>医疗健康</h3><p>精准诊断、药物研发。</p><div class="meta">阅读 →</div></div>
+                    <div class="card" data-article="neuromorphic"><h3>智能制造</h3><p>预测性维护、质量检测。</p><div class="meta">阅读 →</div></div>
+                    <div class="card" data-article="ccp"><h3>金融科技</h3><p>高频交易、风险评估。</p><div class="meta">阅读 →</div></div>
+                    <div class="card" data-article="quantum-software"><h3>科研教育</h3><p>量子模拟、AI教学。</p><div class="meta">阅读 →</div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 关于 ===== -->
+        <section class="page" id="page-about">
+            <div class="container">
+                <h2 style="font-size:32px;font-weight:700;color:var(--primary);margin-bottom:6px;">关于 Apex Dynamics</h2>
+                <p style="color:var(--gray-600);font-size:17px;margin-bottom:32px;">成立于 2018 年，总部硅谷，全球 800+ 员工。</p>
+                <div class="content-block">
+                    <h2>领导团队</h2>
+                    <ul>
+                        <li><strong>Dr. Alan Chen</strong> – CEO & 联合创始人，前 IBM 量子计算首席科学家。</li>
+                        <li><strong>Dr. Elena Vance</strong> – 首席研究官，神经科学专家，主导 NeuralBridge 项目。 <span style="color:var(--gray-400);">(2026年3月离任)</span></li>
+                        <li><strong>Michael Torres</strong> – CTO，硬件架构师，Nyx 芯片总设计师。</li>
+                    </ul>
+                    <div class="hidden-id">RU1QLTczNA==</div>
+                </div>
+                <div class="content-block"><h2>研发中心</h2><p>硅谷 · 波士顿 · 苏黎世 · 新加坡 · 东京</p></div>
+                <div class="content-block"><h2>合作伙伴</h2><p>MIT · 斯坦福 · 苏黎世联邦理工 · IBM · NVIDIA</p></div>
+            </div>
+        </section>
+
+        <!-- ===== 新闻 ===== -->
+        <section class="page" id="page-news">
+            <div class="container">
+                <h2 style="font-size:32px;font-weight:700;color:var(--primary);margin-bottom:6px;">新闻与事件</h2>
+                <p style="color:var(--gray-600);font-size:17px;margin-bottom:32px;">最新动态与行业洞察。</p>
+                <div class="grid-3">
+                    <div class="card" data-article="quantum"><h3>拓扑量子计算取得关键突破</h3><p>马约拉纳费米子观测证实。</p><div class="meta">2026-07-18 · 阅读 →</div></div>
+                    <div class="card" data-article="chimera"><h3>Project Chimera 突破性进展</h3><p>意识数字化映射里程碑。</p><div class="meta">2026-04-12 · 阅读 →</div></div>
+                    <div class="card" data-article="quantum-software"><h3>量子软件栈 2.0 发布</h3><p>编译器性能提升3倍。</p><div class="meta">2026-06-22 · 阅读 →</div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 博客 ===== -->
+        <section class="page" id="page-blog">
+            <div class="container">
+                <h2 style="font-size:32px;font-weight:700;color:var(--primary);margin-bottom:6px;">技术博客</h2>
+                <p style="color:var(--gray-600);font-size:17px;margin-bottom:32px;">深度技术分享与思考。</p>
+                <div class="grid-3">
+                    <div class="card" data-article="ccp"><h3>意识数字化：从哲学到工程</h3><p>CCP协议的理论基础。</p><div class="meta">Elena Vance · 2026-06-28 · 阅读 →</div></div>
+                    <div class="card" data-article="neuromorphic"><h3>神经形态计算的仿生学基础</h3><p>脉冲神经网络与Nyx。</p><div class="meta">Michael Torres · 2026-06-05 · 阅读 →</div></div>
+                    <div class="card" data-article="quantum"><h3>拓扑量子比特的物理实现</h3><p>马约拉纳费米子与量子计算。</p><div class="meta">Alan Chen · 2026-05-18 · 阅读 →</div></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 支持 ===== -->
+        <section class="page" id="page-support">
+            <div class="container">
+                <h2 style="font-size:32px;font-weight:700;color:var(--primary);margin-bottom:6px;">支持中心</h2>
+                <p style="color:var(--gray-600);font-size:17px;margin-bottom:32px;">常见问题与技术支持。</p>
+                <div class="content-block">
+                    <h2>常见问题</h2>
+                    <ul>
+                        <li><strong>如何重置设备？</strong> 请参考内部文档 ID: <span style="font-family:monospace;">0x34 0x32</span></li>
+                        <li><strong>如何获取 API 密钥？</strong> 登录后进入开发者控制台。</li>
+                        <li><strong>产品保修政策</strong> 标准保修期 12 个月。</li>
+                    </ul>
+                </div>
+                <div class="content-block">
+                    <h2>技术文档</h2>
+                    <p>访问我们的 <a data-page="blog" style="cursor:pointer;">技术博客</a> 获取最新白皮书。</p>
+                    <div class="mobile-only" style="margin-top:12px;padding:12px;background:#eef2f6;border-radius:4px;font-size:13px;color:#3a4a5a;font-family:monospace;">34 32 20 43 43 50</div>
+                    <div class="desktop-only" style="margin-top:12px;padding:12px;background:#eef2f6;border-radius:4px;font-size:13px;color:#3a4a5a;font-family:monospace;">41 50 45 58 2d 44 59 4e 2d 32 30 32 36</div>
+                    <p style="margin-top:12px;font-size:12px;color:var(--gray-400);">内部员工请使用员工凭证登录内部系统。</p>
+                </div>
+                <div class="content-block">
+                    <h2>下载资源</h2>
+                    <p><a class="download-link" id="downloadLog">📄 下载实验日志 (log.txt)</a></p>
+                    <p><a class="download-link" id="downloadWhitepaper">📄 下载白皮书 (whitepaper.txt)</a></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 登录/注册（含邮箱必填） ===== -->
+        <section class="page" id="page-auth">
+            <div class="container">
+                <div class="auth-container" id="authBox">
+                    <h2 id="authTitle">登录</h2>
+                    <div class="sub" id="authSub">使用您的 Apex 账号</div>
+                    <div class="form-group"><label>邮箱或用户名</label><input type="text" id="authUsername" placeholder="name@company.com"></div>
+                    <div class="form-group"><label>密码</label><input type="password" id="authPassword" placeholder="至少 8 个字符"></div>
+                    <div class="form-group"><label>安全验证</label><div class="captcha-box" id="captchaBox"><span class="check" id="captchaCheck">✓</span><span class="label">点击验证 “我不是机器人”</span></div><div class="form-error" id="captchaError">请完成验证。</div></div>
+                    <div class="form-error" id="authError"></div>
+                    <button class="btn btn-primary" style="width:100%;padding:10px;" id="authSubmit">登录</button>
+                    <div class="auth-toggle" id="authToggle">还没有账号？ <a id="toggleAuthLink">注册新账号</a></div>
+                </div>
+                <div class="auth-container" id="registerBox" style="display:none;">
+                    <h2>注册</h2>
+                    <div class="sub">创建您的 Apex 账号</div>
+                    <div class="form-group"><label>全名 <span class="required">*</span></label><input type="text" id="regName" placeholder="例如：张明"></div>
+                    <div class="form-group"><label>电子邮箱 <span class="required">*</span></label><input type="email" id="regEmail" placeholder="you@company.com"></div>
+                    <div class="form-group"><label>用户名 <span class="required">*</span></label><input type="text" id="regUsername" placeholder="至少 3 个字符"></div>
+                    <div class="form-group"><label>密码 <span class="required">*</span></label><input type="password" id="regPassword" placeholder="至少 8 个字符"></div>
+                    <div class="form-group"><label>确认密码 <span class="required">*</span></label><input type="password" id="regPassword2" placeholder="再次输入"></div>
+                    <div class="form-group"><label>安全验证</label><div class="captcha-box" id="regCaptchaBox"><span class="check" id="regCaptchaCheck">✓</span><span class="label">点击验证</span></div><div class="form-error" id="regCaptchaError">请完成验证。</div></div>
+                    <div class="form-error" id="regError"></div>
+                    <button class="btn btn-primary" style="width:100%;padding:10px;" id="regSubmit">注册</button>
+                    <div class="auth-toggle">已有账号？ <a id="toggleLoginLink">去登录</a></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 内部系统 ===== -->
+        <section class="page" id="page-internal">
+            <div class="container">
+                <h2 style="font-size:32px;font-weight:700;color:var(--primary);margin-bottom:6px;">内部管理系统</h2>
+                <p style="color:var(--gray-600);font-size:17px;margin-bottom:32px;">欢迎，员工。</p>
+
+                <div class="internal-dashboard">
+                    <h2>仪表盘</h2><div class="sub">系统状态概览</div>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card"><div class="label">系统版本</div><div class="value">2.6.1</div></div>
+                        <div class="dashboard-card"><div class="label">编译 ID</div><div class="value">APEX-DYN-2026</div></div>
+                        <div class="dashboard-card"><div class="label">活动会话</div><div class="value">1</div></div>
+                    </div>
+                    <div style="margin-top:16px;padding:14px 18px;background:var(--gray-100);border-radius:var(--radius);border:1px solid var(--gray-200);display:flex;align-items:center;gap:12px;cursor:pointer;" id="mailboxQuickLink">
+                        <span style="font-size:20px;">📧</span>
+                        <span style="font-weight:500;">收件箱</span>
+                        <span style="margin-left:auto;background:var(--accent);color:white;padding:0 10px;border-radius:20px;font-size:12px;" id="mailBadge">1</span>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>终端控制台</h2>
+                    <p>输入 <kbd>help</kbd> 查看命令。</p>
+                    <div class="terminal" id="terminal">
+                        <div class="output">Apex 内部终端 v2.1 · 员工已认证</div>
+                        <div class="input-line"><span class="prompt">$</span><input type="text" id="terminalInput" autofocus spellcheck="false" autocomplete="off"></div>
+                    </div>
+                </div>
+
+                <div class="content-block">
+                    <h2>内部文件系统</h2>
+                    <div class="file-browser" id="fileBrowser">
+                        <div class="file-item" data-file="readme"><span class="name">📄 README.md</span><span class="size">2.4 KB</span></div>
+                        <div class="file-item" data-file="changelog"><span class="name">📄 CHANGELOG.md</span><span class="size">1.8 KB</span></div>
+                        <div class="file-item" data-file="secret"><span class="name">🔒 secret.txt</span><span class="size">0.5 KB</span></div>
+                        <div class="file-content" id="fileContent"></div>
+                    </div>
+                </div>
+
+                <div class="internal-doc">
+                    <h3>Project Chimera – 最终报告 (摘录)</h3>
+                    <div style="color:var(--gray-600);font-size:14px;margin-bottom:14px;">编号: CHM-2026-04-12 · 作者: Dr. Elena Vance</div>
+                    <p>经过 36 个月的实验，我们成功实现了小鼠全脑神经连接组的数字化映射。然而，在后续的“意识回响”测试中，我们发现数字化的神经模式出现了不可控的<span class="redacted" title="点击查看">自发重组现象</span>，导致了类似“分裂人格”的异常行为。</p>
+                    <p>更令人担忧的是，当我们将同样的技术应用于灵长类动物时，受试体出现了<span class="redacted" title="点击查看">强烈的自我指涉幻觉</span>，并伴随记忆碎片化。我们初步判断，该技术可能导致“意识撕裂”。</p>
+                    <p>我于 2026 年 3 月 17 日向董事会提交了紧急暂停建议，但未被采纳。次日，我选择离职。此报告为个人备份。</p>
+                    <p style="margin-top:14px;font-size:12px;color:var(--gray-600);">—— 本文件已加密，仅限员工查看。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 邮箱页面 ===== -->
+        <section class="page" id="page-mailbox">
+            <div class="container">
+                <div class="mailbox-container">
+                    <div class="mailbox-header">
+                        <h2>📧 收件箱</h2>
+                        <span class="badge">1 封未读</span>
+                    </div>
+                    <div class="mail-list">
+                        <div class="mail-item unread" id="mailItem">
+                            <span class="tag-unread"></span>
+                            <span class="sender">Elena Vance</span>
+                            <span class="subject">关于 Project Chimera 的最终决定</span>
+                            <span class="date">今天 14:32</span>
+                        </div>
+                    </div>
+                    <div class="mail-view" id="mailView">
+                        <div class="mail-back" id="mailBack">← 返回收件箱</div>
+                        <div class="mail-subject">关于 Project Chimera 的最终决定</div>
+                        <div class="mail-meta">
+                            <div class="from">发件人：Elena Vance &lt;elena.vance@apex-dynamics.com&gt;</div>
+                            <div class="date">2026年7月23日 14:32</div>
+                        </div>
+                        <div class="mail-body" id="mailBody">
+                            <p>亲爱的员工，</p>
+                            <p>首先，恭喜你成功突破了所有关卡，来到了这里。你已经掌握了 Project Chimera 的真相——意识数字化技术存在着不可控的伦理风险，而我曾试图阻止，却未能成功。</p>
+                            <p>现在，你面前有一个选择。这个选择将决定 Apex Dynamics 的未来，也决定你自己在历史中的位置。</p>
+                            <p><strong>选择一：支持公开真相</strong> — 将证据提交给媒体和监管机构，让公众知情，迫使公司停止危险实验。</p>
+                            <p><strong>选择二：支持内部改革</strong> — 与董事会合作，推动 CCP 协议的完善，在安全框架下继续探索。</p>
+                            <p><strong>选择三：保持沉默</strong> — 当作什么都没发生过，保护自己和家人的安全。</p>
+                            <p>请点击下方按钮做出你的选择。一封正式的邮件将发送到你注册时填写的邮箱。</p>
+                            <div class="mail-actions" id="mailActions">
+                                <button class="btn btn-primary" id="choicePublic">公开真相</button>
+                                <button class="btn btn-primary" id="choiceReform">支持改革</button>
+                                <button class="btn btn-outline" id="choiceSilence">保持沉默</button>
+                            </div>
+                            <div class="sending-indicator" id="sendingIndicator">
+                                <div class="spinner"></div>
+                                <span>正在发送邮件，请稍候...</span>
+                            </div>
+                            <div id="endingContainer" style="display:none;margin-top:20px;padding-top:20px;border-top:2px solid var(--gray-200);">
+                                <h3 style="color:var(--primary);font-size:20px;">✅ 邮件已发送</h3>
+                                <div id="endingText" style="font-size:15px;line-height:1.8;color:var(--gray-800);"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== 文章详情视图 ===== -->
+        <div class="article-view" id="articleView">
+            <div class="container">
+                <a class="back-link" id="articleBack">← 返回</a>
+                <div class="article-header">
+                    <h1 id="articleTitle"></h1>
+                    <div class="byline" id="articleByline"></div>
+                </div>
+                <div class="article-body" id="articleBody"></div>
+            </div>
+        </div>
+
+        <!-- ===== 员工入口（仅手机） ===== -->
+        <div class="employee-link-mobile">
+            <a id="employeeMobileLink">🔐 员工身份验证</a>
+        </div>
+
+        <!-- ===== 邮件通知弹窗 ===== -->
+        <div class="mail-notification" id="mailNotification">
+            <div style="display:flex;align-items:center;">
+                <span class="icon">📧</span>
+                <div>
+                    <div class="title">您有一封新邮件</div>
+                    <div class="preview">来自 Elena Vance · 关于 Project Chimera 的最终决定</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== 邮件发送成功提示 ===== -->
+        <div class="mail-sent-toast" id="mailSentToast">
+            <div class="toast-title">📨 邮件已发送</div>
+            <div class="toast-sub">请检查您注册时填写的邮箱</div>
+        </div>
+    </div>
+
+    <!-- ===== 页脚 ===== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="col"><strong>产品</strong><a data-page="products">QuantumCore</a><a data-page="products">Nyx</a><a data-page="products">NeuralBridge</a></div>
+            <div class="col"><strong>公司</strong><a data-page="about">关于</a><a data-page="news">新闻</a><a data-page="blog">博客</a></div>
+            <div class="col"><strong>支持</strong><a data-page="support">帮助中心</a></div>
+            <div class="copy">© 2026 Apex Dynamics Inc. 保留所有权利。<span style="display:block;font-size:10px;color:var(--gray-600);margin-top:4px;">固件版本 2.6.1 · 编译 ID: APEX-DYN-2026</span></div>
+        </div>
+    </footer>
+
+    <!-- ===== 员工模态框 ===== -->
+    <div class="modal-overlay" id="employeeModal">
+        <div class="modal-box">
+            <button class="close" id="modalClose">&times;</button>
+            <h3>员工身份验证</h3>
+            <p>请输入您的员工 ID 和密码。</p>
+            <div class="form-group"><label>员工 ID</label><input type="text" id="empId" placeholder="例如：EMP-734"></div>
+            <div class="form-group"><label>密码</label><input type="password" id="empPwd" placeholder="请输入您的员工密码"></div>
+            <div class="form-error" id="empError" style="display:block;color:#b91c1c;margin-bottom:12px;display:none;">ID 或密码错误。</div>
+            <button class="btn btn-primary" style="width:100%;" id="empSubmit">验证身份</button>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================================
+        //  ARG 核心逻辑 + EmailJS 邮件发送
+        // =====================================================================
+
+        (function() {
+            'use strict';
+
+            // ---------- EmailJS 配置 ----------
+            const EMAILJS_CONFIG = {
+                publicKey: 'NAmalLdOHWiIqijI7',
+                serviceID: 'service_vzq6gbf',
+                templateID: 'template_v482x3o'
+            };
+
+            // ---------- 文章数据 ----------
+            const articles = {
+                quantum: {
+                    title: '拓扑量子计算：马约拉纳费米子与容错架构',
+                    byline: 'Dr. Alan Chen · 2026年7月18日 · 量子计算部',
+                    body: `
+                        <p>量子计算的核心挑战在于退相干和纠错。传统的超导量子比特虽然取得了巨大进展，但其对环境的敏感性限制了可扩展性。拓扑量子计算提供了一种全新的范式：利用非阿贝尔任意子的拓扑性质来编码和处理量子信息，从物理层面提供对错误的天然免疫力。</p>
+                        <p>马约拉纳费米子——一种奇异的准粒子，其反粒子等于自身——是实现拓扑量子比特的最有前途的候选者。在半导体纳米线与超导体的异质结构中，我们观察到了马约拉纳零模的特征信号，这为拓扑量子比特的物理实现奠定了基础。</p>
+                        <p>我们的团队在 <span class="term">马约拉纳零模</span> 的探测和操控方面取得了关键突破。通过精确调节门电压和磁场，我们能够稳定地创建和湮灭马约拉纳束缚态，并测量其非阿贝尔交换统计。这一成果为容错量子计算铺平了道路。</p>
+                        <p>实验数据显示，拓扑量子比特的相干时间比传统超导量子比特提高了两个数量级。然而，实现大规模的拓扑量子计算仍然面临着材料纯度和测量保真度的挑战。我们正在与 IBM 和 MIT 合作，推动拓扑量子比特的工业化进程。</p>
+                        <div class="highlight-box">
+                            <strong>关键参数</strong><br>
+                            工作温度: 10 mK<br>
+                            相干时间: > 100 μs<br>
+                            门保真度: 99.5%<br>
+                            <span style="font-family:monospace;font-size:13px;color:#3a4a5a;">0x41 0x50 0x45 0x58</span>
+                        </div>
+                        <p>本项研究得到了美国国家科学基金会和 DARPA 的资助。我们相信，在未来的五年内，拓扑量子计算将实现从实验室到数据中心的跨越。</p>
+                        <p>—— 本文为完整版本，包含所有技术细节。</p>
+                    `
+                },
+                neuromorphic: {
+                    title: '神经形态计算：脉冲神经网络与Nyx芯片设计',
+                    byline: 'Michael Torres · 2026年6月5日 · 硬件架构部',
+                    body: `
+                        <p>神经形态计算旨在模仿生物神经系统的结构与功能，实现超低功耗、高效率的信息处理。与传统冯·诺依曼架构不同，神经形态芯片采用事件驱动的计算模式，仅在神经元发放脉冲时消耗能量。</p>
+                        <p>我们的 Nyx 芯片采用 7nm 工艺，集成了 10 亿个脉冲神经元和 100 亿个突触。其核心架构基于 <span class="term">尖峰时间依赖可塑性</span> (STDP)，能够在线学习和适应输入模式。在图像识别和时序预测任务中，Nyx 的能效比传统 GPU 提升了 40 倍以上。</p>
+                        <p>Nyx 芯片的设计借鉴了哺乳动物视觉皮层的层次化结构，采用了多时间尺度的信息编码机制。我们通过硬件实现的三态突触权重存储，大大降低了片外存储器的访问频率，从而实现了极低的功耗。</p>
+                        <div class="highlight-box">
+                            <strong>Nyx 芯片规格</strong><br>
+                            工艺节点: 7nm<br>
+                            神经元数: 1B<br>
+                            突触数: 10B<br>
+                            峰值能效: 10 TOPS/W<br>
+                            <span style="font-family:monospace;font-size:13px;color:#3a4a5a;">44 59 4e 2d 32 30 32 36</span>
+                        </div>
+                        <p>我们正在开发第二代 Nyx 芯片，预计将在 2027 年量产。新一代芯片将集成片上学习加速器，支持更复杂的脉冲神经网络拓扑。</p>
+                        <p>—— 本文为完整版本，包含所有技术细节。</p>
+                    `
+                },
+                neuralbridge: {
+                    title: 'NeuralBridge：高带宽双向脑机接口技术',
+                    byline: 'Dr. Elena Vance · 2026年5月22日 · 神经科学部',
+                    body: `
+                        <p>脑机接口 (BCI) 技术正在从实验室走向临床应用。我们的 NeuralBridge 项目致力于开发高带宽、非侵入式的双向神经接口，实现大脑与外部设备的高速信息交换。</p>
+                        <p>NeuralBridge 采用高密度柔性电极阵列，能够同时记录数千个神经元的电活动，并通过微刺激实现双向通信。信号处理方面，我们开发了基于深度学习的实时解码算法，能够从神经信号中准确重建运动意图和感知信息。</p>
+                        <p>在临床前研究中，NeuralBridge 成功帮助瘫痪患者控制了机械臂，并在感觉反馈实验中实现了触觉信息的传入。这些成果为脑机接口在神经康复领域的应用开辟了新的可能性。</p>
+                        <p>我们的系统支持 2000 Hz 的采样频率，能够捕捉到高精度的神经尖峰活动。信号质量在 6 个月的植入期内保持稳定，显示出良好的生物相容性。</p>
+                        <div class="highlight-box">
+                            <strong>技术参数</strong><br>
+                            通道数: 1024<br>
+                            采样率: 2000 Hz<br>
+                            带宽: 2.5 Gbps<br>
+                            <span style="font-family:monospace;font-size:13px;color:#3a4a5a;">TkItMDcx</span>
+                        </div>
+                        <p>我们正在与多家医院合作进行临床试验，预计在 2027 年获得 FDA 批准。NeuralBridge 将成为脑机接口技术商业化的里程碑。</p>
+                        <p>—— 本文为完整版本，包含所有技术细节。</p>
+                    `
+                },
+                ccp: {
+                    title: '意识数字化与CCP协议：从哲学到工程',
+                    byline: 'Dr. Elena Vance · 2026年6月28日 · 伦理与安全部',
+                    body: `
+                        <p>将人类意识映射到数字空间，这一概念从哲学思辨走向了工程实践。我们的研究团队在过去五年中，系统性地探索了意识数字化的理论基础和技术路径。</p>
+                        <p><span class="term">意识连续性协议</span> (Consciousness Continuity Protocol, CCP) 是我们提出的核心框架，旨在确保数字化过程中的意识流保持完整性和连续性。CCP 协议定义了三个关键指标：时间分辨率、空间分辨率和信息完整性阈值。</p>
+                        <p>实验证据表明，当采样频率低于 1000 Hz 时，意识片段的重组概率显著上升。我们采用 2000 Hz 的采样率，结合高密度电极阵列，成功捕获了小鼠大脑中 80% 以上的神经连接信息。</p>
+                        <p>然而，我们发现在数字化过程中，存在一种被称为 <span class="term">“意识回响”</span> 的现象——即数字化的神经模式在持续刺激下出现自发重组，产生类似“分裂人格”的异常行为。这一发现引发了深刻的伦理争议。</p>
+                        <div class="highlight-box">
+                            <strong>CCP 协议指标</strong><br>
+                            最小采样率: 1000 Hz<br>
+                            空间分辨率: 1 μm<br>
+                            完整性阈值: 95%<br>
+                            <span style="font-family:monospace;font-size:13px;color:#3a4a5a;">43 43 50 20 34 32</span>
+                        </div>
+                        <p>我们正在与伦理委员会合作，制定意识数字化的安全标准和操作规程。CCP 协议将成为该领域的首个行业规范。</p>
+                        <p>—— 本文为完整版本，包含所有技术细节。</p>
+                    `
+                },
+                chimera: {
+                    title: 'Project Chimera 实验报告：意识映射的突破与警示',
+                    byline: 'Dr. Elena Vance · 2026年4月12日 · 神经科学部',
+                    body: `
+                        <p>Project Chimera（代号“回声”）是 Apex 历史上最雄心勃勃的研究项目。我们成功将小鼠的完整神经连接组数字化映射至一个自组织的神经网络中，并观察到了与生物体相似的刺激-响应行为。</p>
+                        <p>实验的核心技术是基于 <span class="term">光遗传学</span> 和 <span class="term">钙成像</span> 的高通量神经活动记录，结合我们自主研发的神经解码算法。在为期 12 个月的实验中，我们记录了超过 10 万小时的神经活动数据。</p>
+                        <p>然而，在后续的“意识回响”测试中，我们发现了令人担忧的现象：数字化的神经模式在持续刺激下出现了不可控的自发重组，产生了类似于“多个人格”的异常行为模式。受试体在数字空间中表现出强烈的自我指涉幻觉和记忆碎片化。</p>
+                        <p>更深入的分析表明，这种“意识撕裂”现象可能与数字化过程中的相位同步丢失有关。当神经网络的全局同步性低于某个阈值时，意识的一致性就会被打破。</p>
+                        <div class="highlight-box">
+                            <strong>实验关键数据</strong><br>
+                            记录时长: 12 个月<br>
+                            数据量: 2.4 PB<br>
+                            同步性阈值: 0.73<br>
+                            <span style="font-family:monospace;font-size:13px;color:#3a4a5a;">43 48 49 4d 45 52 41</span>
+                        </div>
+                        <p>我于 2026 年 3 月 17 日向董事会提交了紧急暂停建议，但未被采纳。次日，我选择离职。此报告为个人备份，仅供内部伦理审查参考。</p>
+                        <p>—— 本文为完整版本，包含所有技术细节。</p>
+                        <div class="zoom-clue">clue: 42 is the answer</div>
+                    `
+                },
+                'quantum-software': {
+                    title: '量子软件栈与编译优化：从电路到经典后处理',
+                    byline: 'Dr. Alan Chen · 2026年6月22日 · 量子计算部',
+                    body: `
+                        <p>量子计算的产业化不仅需要硬件的突破，还需要完整的软件生态。我们开发了 QuantumCore 软件栈，涵盖了量子电路编译、优化、调度和经典后处理的全流程。</p>
+                        <p>编译器核心采用了一种基于 <span class="term">张量网络收缩</span> 的优化算法，能够将量子电路映射到硬件拓扑上，最小化门操作的保真度损失。我们同时支持了 Clifford+T 门集的容错编译，以及针对 NISQ 设备的噪声自适应优化。</p>
+                        <p>在经典后处理方面，我们开发了基于贝叶斯推理的测量结果校正算法，能够显著提高量子计算的输出精度。该算法已经被集成到 QuantumCore 云平台中，服务了全球 50 多个科研机构。</p>
+                        <p>我们正在开发新一代的量子-经典混合编译器，支持动态电路重编译和实时反馈控制。这将为量子化学模拟和优化问题带来革命性的加速。</p>
+                        <div class="highlight-box">
+                            <strong>编译器性能指标</strong><br>
+                            编译速度: 5M 门/秒<br>
+                            保真度损失: < 0.1%<br>
+                            支持量子比特数: 100+<br>
+                            <span style="font-family:monospace;font-size:13px;color:#3a4a5a;">41 50 45 58 2d 44 59 4e 2d 32 30 32 36</span>
+                        </div>
+                        <p>我们的编译器已经开源，欢迎社区参与贡献。未来，我们将进一步优化编译策略，支持更大规模的量子计算任务。</p>
+                        <p>—— 本文为完整版本，包含所有技术细节。</p>
+                    `
+                }
+            };
+
+            // ---------- 结局数据 ----------
+            const endings = {
+                public: {
+                    doc_id: 'ETH-2026-07-23-01',
+                    classification: '公开',
+                    signature: 'Apex Dynamics 伦理委员会',
+                    message_body: `经伦理委员会审议，依据你提交的 Project Chimera 实验证据（编号 CHM-2026-04-12），现作出如下决定：
+
+            一、即日起，全面终止 Project Chimera 所有涉及意识数字化的实验活动。
+
+            二、所有实验数据移交第三方独立机构封存审查。
+
+            三、董事会全体成员于本决定发布之日起启动内部问责程序。
+
+            你对本次事件的贡献已被记录在案。Apex Dynamics 将成立由 Dr. Elena Vance 领导的伦理监督委员会，确保此类事件不再发生。
+
+            感谢你的勇气与担当。`,
+                    ending_text: '你选择了公开真相。一封正式的邮件已发送到你注册时填写的邮箱。'
+                },
+                reform: {
+                    doc_id: 'BRD-2026-07-23-03',
+                    classification: '内部',
+                    signature: 'Apex Dynamics 董事会',
+                    message_body: `经董事会决议，采纳你关于在 CCP 协议框架下继续推进研究的建议，现作出如下安排：
+
+            一、即日起，Project Chimera 更名为"意识连续性研究计划"（ACRP），所有实验须在 CCP 协议框架下进行。
+
+            二、成立由 Dr. Elena Vance 担任主席的独立伦理审查委员会，对每一项实验进行前置审批。
+
+            三、所有实验数据实时同步至伦理委员会，接受不定期抽查。
+
+            你在本次事件中展现的理性与远见，为 Apex Dynamics 的技术发展指明了方向。董事会决定邀请你参与 CCP 协议的后续修订工作。
+
+            期待你的继续参与。`,
+                    ending_text: '你选择了支持改革。一封正式的邮件已发送到你注册时填写的邮箱。'
+                },
+                silence: {
+                    doc_id: 'SYS-2026-07-23-07',
+                    classification: '机密',
+                    signature: 'Apex Dynamics 系统管理部',
+                    message_body: `经系统审计，你于 2026 年 7 月 23 日对内部系统的访问记录已被标记为"例行维护"，相关日志已按规程归档。
+
+            你在此次事件中的选择已被记录。根据公司信息安全管理条例，本次通信内容将在发送后 30 天内自动删除。
+
+            如有任何疑问，请联系系统管理员。`,
+                    ending_text: '你选择了保持沉默。一封正式的邮件已发送到你注册时填写的邮箱。'
+                }
+            };
+
+            // ---------- 状态 ----------
+            const state = {
+                loggedIn: false,
+                username: '',
+                userEmail: '',
+                isLogin: true,
+                captchaVerified: false,
+                regCaptchaVerified: false,
+                employeeVerified: false,
+                currentPage: 'home',
+                currentArticle: null,
+                mailRead: false,
+                endingChosen: false,
+                files: {
+                    'readme': { name: 'README.md',
+                    content: '# 内部系统\n\n欢迎使用 Apex 内部系统。\n\n系统版本: 2.6.1\n编译 ID: APEX-DYN-2026\n\n提示：阅读所有文章，提取线索并解码。' },
+                    'changelog': { name: 'CHANGELOG.md',
+                    content: '# 更新日志\n\n## v2.6.1 (2026-07-01)\n- 修复量子纠错稳定性问题\n- 更新 NeuralBridge 驱动\n\n## v2.6.0 (2026-06-15)\n- 新增 CCP 协议支持\n- 优化神经形态芯片调度' },
+                    'secret': { name: 'secret.txt',
+                    content: '密码由五个片段组成，分别藏在五篇文章中：\n\n1. 拓扑量子计算文章中的十六进制\n2. 神经形态计算文章中的十六进制\n3. NeuralBridge 文章中的 Base64\n4. CCP 文章中的十六进制\n5. Chimera 文章中的十六进制\n\n解码后拼接（小写，去除非字母数字）。\n\n员工 ID 在关于页面的隐藏元素中。\n\n—— 本文件不包含完整密码，请自行收集。' }
+                }
+            };
+
+            // ---------- DOM 引用 ----------
+            const $ = (sel) => document.querySelector(sel);
+            const $$ = (sel) => document.querySelectorAll(sel);
+
+            const dom = {
+                pages: {
+                    home: $('#page-home'),
+                    products: $('#page-products'),
+                    solutions: $('#page-solutions'),
+                    about: $('#page-about'),
+                    news: $('#page-news'),
+                    blog: $('#page-blog'),
+                    support: $('#page-support'),
+                    auth: $('#page-auth'),
+                    internal: $('#page-internal'),
+                    mailbox: $('#page-mailbox'),
+                },
+                articleView: $('#articleView'),
+                articleTitle: $('#articleTitle'),
+                articleByline: $('#articleByline'),
+                articleBody: $('#articleBody'),
+                articleBack: $('#articleBack'),
+                navLinks: $$('.nav-links a'),
+                userDisplay: $('#userDisplay'),
+                authBtn: $('#authBtn'),
+                internalNavLink: $('#internalNavLink'),
+                mailboxNavLink: $('#mailboxNavLink'),
+                authBox: $('#authBox'),
+                registerBox: $('#registerBox'),
+                authUsername: $('#authUsername'),
+                authPassword: $('#authPassword'),
+                authSubmit: $('#authSubmit'),
+                authError: $('#authError'),
+                toggleAuthLink: $('#toggleAuthLink'),
+                captchaBox: $('#captchaBox'),
+                captchaCheck: $('#captchaCheck'),
+                captchaError: $('#captchaError'),
+                regName: $('#regName'),
+                regEmail: $('#regEmail'),
+                regUsername: $('#regUsername'),
+                regPassword: $('#regPassword'),
+                regPassword2: $('#regPassword2'),
+                regSubmit: $('#regSubmit'),
+                regError: $('#regError'),
+                regCaptchaBox: $('#regCaptchaBox'),
+                regCaptchaCheck: $('#regCaptchaCheck'),
+                regCaptchaError: $('#regCaptchaError'),
+                toggleLoginLink: $('#toggleLoginLink'),
+                employeeModal: $('#employeeModal'),
+                empId: $('#empId'),
+                empPwd: $('#empPwd'),
+                empSubmit: $('#empSubmit'),
+                empError: $('#empError'),
+                modalClose: $('#modalClose'),
+                employeeMobileLink: $('#employeeMobileLink'),
+                terminalInput: $('#terminalInput'),
+                terminal: $('#terminal'),
+                fileItems: $$('.file-item'),
+                fileContent: $('#fileContent'),
+                downloadLog: $('#downloadLog'),
+                downloadWhitepaper: $('#downloadWhitepaper'),
+                allCards: $$('.card[data-article]'),
+                mailItem: $('#mailItem'),
+                mailView: $('#mailView'),
+                mailBack: $('#mailBack'),
+                mailBody: $('#mailBody'),
+                mailNotification: $('#mailNotification'),
+                mailboxQuickLink: $('#mailboxQuickLink'),
+                mailBadge: $('#mailBadge'),
+                choicePublic: $('#choicePublic'),
+                choiceReform: $('#choiceReform'),
+                choiceSilence: $('#choiceSilence'),
+                endingContainer: $('#endingContainer'),
+                endingText: $('#endingText'),
+                sendingIndicator: $('#sendingIndicator'),
+                mailSentToast: $('#mailSentToast'),
+                mailActions: $('#mailActions'),
+            };
+
+            // ---------- 核心函数 ----------
+            function switchPage(pageId) {
+                if (pageId === 'internal' && !state.employeeVerified) return;
+                if (pageId === 'mailbox' && !state.employeeVerified) return;
+                state.currentPage = pageId;
+                Object.values(dom.pages).forEach(p => p.classList.remove('active'));
+                dom.articleView.classList.remove('active');
+                const target = dom.pages[pageId];
+                if (target) target.classList.add('active');
+                dom.navLinks.forEach(a => a.classList.toggle('active', a.dataset.page === pageId));
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                if (pageId === 'internal') {
+                    setTimeout(() => {
+                        const inp = document.getElementById('terminalInput');
+                        if (inp) { inp.focus(); }
+                    }, 300);
+                }
+                if (pageId === 'mailbox' && !state.mailRead) {
+                    state.mailRead = true;
+                    dom.mailBadge.textContent = '0';
+                    dom.mailItem.classList.remove('unread');
+                    openMail();
+                }
+            }
+
+            function showArticle(articleKey) {
+                const data = articles[articleKey];
+                if (!data) return;
+                state.currentArticle = articleKey;
+                Object.values(dom.pages).forEach(p => p.classList.remove('active'));
+                dom.articleView.classList.add('active');
+                dom.articleTitle.textContent = data.title;
+                dom.articleByline.textContent = data.byline;
+                dom.articleBody.innerHTML = data.body;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                dom.navLinks.forEach(a => a.classList.remove('active'));
+            }
+
+            function goBack() {
+                if (state.currentPage) switchPage(state.currentPage);
+                else switchPage('home');
+            }
+
+            // ---------- 邮件系统 ----------
+            function openMail() {
+                dom.mailView.classList.add('active');
+                setTimeout(() => {
+                    dom.mailView.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 200);
+            }
+
+            function closeMail() {
+                dom.mailView.classList.remove('active');
+            }
+
+            // ---------- EmailJS 发送邮件 ----------
+            function sendEmail(choice) {
+                const userEmail = localStorage.getItem('apex_user_email') || state.userEmail;
+                const username = state.username || '员工';
+
+                if (!userEmail) {
+                    alert('未找到您的邮箱地址，请确认您已注册并填写了邮箱。');
+                    return;
+                }
+
+                const ending = endings[choice];
+                if (!ending) return;
+
+                // 显示发送中
+                dom.sendingIndicator.classList.add('show');
+                dom.mailActions.style.opacity = '0.5';
+                dom.mailActions.style.pointerEvents = 'none';
+
+                // 初始化 EmailJS
+                emailjs.init(EMAILJS_CONFIG.publicKey);
+
+                const templateParams = {
+                    user_email: userEmail,
+                    username: username,
+                    doc_id: ending.doc_id,
+                    classification: ending.classification,
+                    signature: ending.signature,
+                    message_body: ending.message_body
+                };
+
+                emailjs.send(EMAILJS_CONFIG.serviceID, EMAILJS_CONFIG.templateID, templateParams)
+                    .then(function(response) {
+                        console.log('邮件发送成功:', response);
+                        dom.sendingIndicator.classList.remove('show');
+                        dom.mailActions.style.opacity = '1';
+                        dom.mailActions.style.pointerEvents = 'auto';
+                        // 显示结局
+                        showEnding(choice, ending.ending_text);
+                        // 显示成功提示
+                        dom.mailSentToast.classList.add('show');
+                        setTimeout(() => {
+                            dom.mailSentToast.classList.remove('show');
+                        }, 5000);
+                    })
+                    .catch(function(error) {
+                        console.error('邮件发送失败:', error);
+                        dom.sendingIndicator.classList.remove('show');
+                        dom.mailActions.style.opacity = '1';
+                        dom.mailActions.style.pointerEvents = 'auto';
+                        alert('邮件发送失败，请稍后重试。错误信息: ' + (error.text || error.message || '未知错误'));
+                    });
+            }
+
+            function showEnding(choice, endingText) {
+                dom.endingContainer.style.display = 'block';
+                dom.endingText.textContent = endingText;
+                dom.choicePublic.disabled = true;
+                dom.choiceReform.disabled = true;
+                dom.choiceSilence.disabled = true;
+                dom.choicePublic.style.opacity = '0.5';
+                dom.choiceReform.style.opacity = '0.5';
+                dom.choiceSilence.style.opacity = '0.5';
+                dom.choicePublic.style.cursor = 'default';
+                dom.choiceReform.style.cursor = 'default';
+                dom.choiceSilence.style.cursor = 'default';
+                state.endingChosen = true;
+            }
+
+            // ---------- 用户认证 ----------
+            function updateUserUI() {
+                if (state.loggedIn && state.username) {
+                    dom.userDisplay.innerHTML = `<strong>${state.username}</strong>`;
+                    dom.authBtn.textContent = '退出';
+                    dom.authBtn.className = 'btn btn-outline btn-sm';
+                } else {
+                    dom.userDisplay.textContent = '访客';
+                    dom.authBtn.textContent = '登录';
+                    dom.authBtn.className = 'btn btn-primary btn-sm';
+                }
+            }
+
+            function toggleAuthMode(isLogin) {
+                state.isLogin = isLogin;
+                dom.authBox.style.display = isLogin ? 'block' : 'none';
+                dom.registerBox.style.display = isLogin ? 'none' : 'block';
+                dom.authError.classList.remove('show');
+                dom.regError.classList.remove('show');
+                dom.captchaError.classList.remove('show');
+                dom.regCaptchaError.classList.remove('show');
+                state.captchaVerified = false;
+                state.regCaptchaVerified = false;
+                dom.captchaCheck.classList.remove('checked');
+                dom.regCaptchaCheck.classList.remove('checked');
+                dom.authUsername.value = '';
+                dom.authPassword.value = '';
+                dom.regName.value = '';
+                dom.regEmail.value = '';
+                dom.regUsername.value = '';
+                dom.regPassword.value = '';
+                dom.regPassword2.value = '';
+            }
+
+            function handleLogin() {
+                const username = dom.authUsername.value.trim();
+                const password = dom.authPassword.value.trim();
+                dom.authError.classList.remove('show');
+                dom.captchaError.classList.remove('show');
+                if (!username || !password) { dom.authError.textContent = '请填写完整信息。';
+                    dom.authError.classList.add('show'); return; }
+                if (!state.captchaVerified) { dom.captchaError.classList.add('show'); return; }
+                const stored = localStorage.getItem('apex_user_' + username);
+                if (stored) {
+                    const data = JSON.parse(stored);
+                    if (data.password === password) {
+                        state.loggedIn = true;
+                        state.username = data.username || username;
+                        state.userEmail = data.email || '';
+                        localStorage.setItem('apex_current_user', username);
+                        updateUserUI();
+                        switchPage('home');
+                        dom.captchaCheck.classList.remove('checked');
+                        state.captchaVerified = false;
+                        dom.authUsername.value = '';
+                        dom.authPassword.value = '';
+                        return;
+                    } else {
+                        dom.authError.textContent = '密码错误，请重试。';
+                        dom.authError.classList.add('show');
+                        return;
+                    }
+                } else {
+                    dom.authError.textContent = '用户不存在，请先注册。';
+                    dom.authError.classList.add('show');
+                    return;
+                }
+            }
+
+            function handleRegister() {
+                const name = dom.regName.value.trim();
+                const email = dom.regEmail.value.trim();
+                const username = dom.regUsername.value.trim();
+                const password = dom.regPassword.value.trim();
+                const password2 = dom.regPassword2.value.trim();
+                dom.regError.classList.remove('show');
+                dom.regCaptchaError.classList.remove('show');
+
+                if (!name) { dom.regError.textContent = '请填写全名。';
+                    dom.regError.classList.add('show'); return; }
+                if (!email) { dom.regError.textContent = '请填写电子邮箱。';
+                    dom.regError.classList.add('show'); return; }
+                if (!username || username.length < 3) { dom.regError.textContent = '用户名至少 3 个字符。';
+                    dom.regError.classList.add('show'); return; }
+                if (password.length < 8) { dom.regError.textContent = '密码至少 8 个字符。';
+                    dom.regError.classList.add('show'); return; }
+                if (password !== password2) { dom.regError.textContent = '两次密码输入不一致。';
+                    dom.regError.classList.add('show'); return; }
+                if (!state.regCaptchaVerified) { dom.regCaptchaError.classList.add('show'); return; }
+
+                // 验证邮箱格式
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) { dom.regError.textContent = '请输入有效的邮箱地址。';
+                    dom.regError.classList.add('show'); return; }
+
+                const existing = localStorage.getItem('apex_user_' + username);
+                if (existing) { dom.regError.textContent = '用户名已被占用。';
+                    dom.regError.classList.add('show'); return; }
+
+                const userData = {
+                    username: username,
+                    password: password,
+                    name: name,
+                    email: email,
+                    registered: new Date().toISOString()
+                };
+                localStorage.setItem('apex_user_' + username, JSON.stringify(userData));
+                localStorage.setItem('apex_user_email', email);
+
+                state.loggedIn = true;
+                state.username = username;
+                state.userEmail = email;
+                localStorage.setItem('apex_current_user', username);
+                updateUserUI();
+                switchPage('home');
+                dom.regName.value = '';
+                dom.regEmail.value = '';
+                dom.regUsername.value = '';
+                dom.regPassword.value = '';
+                dom.regPassword2.value = '';
+                dom.regCaptchaCheck.classList.remove('checked');
+                state.regCaptchaVerified = false;
+            }
+
+            // ---------- 员工验证 ----------
+            function verifyEmployee() {
+                const id = dom.empId.value.trim().toUpperCase();
+                const pwd = dom.empPwd.value.trim();
+                dom.empError.style.display = 'none';
+
+                if (id !== 'EMP-734') {
+                    dom.empError.textContent = '员工 ID 错误。';
+                    dom.empError.style.display = 'block';
+                    return;
+                }
+
+                const correct = 'apexdyn2026nb071chimeraccp42';
+                const input = pwd.toLowerCase().replace(/[^a-z0-9]/g, '');
+                if (input !== correct) {
+                    dom.empError.textContent = '密码错误。请从五篇文章中提取线索并解码。';
+                    dom.empError.style.display = 'block';
+                    return;
+                }
+
+                state.employeeVerified = true;
+                dom.employeeModal.classList.remove('active');
+                dom.internalNavLink.style.display = 'inline-block';
+                dom.internalNavLink.classList.add('visible');
+                dom.mailboxNavLink.style.display = 'inline-block';
+                dom.mailboxNavLink.classList.add('visible');
+                switchPage('internal');
+
+                setTimeout(() => {
+                    dom.mailNotification.classList.add('show');
+                    setTimeout(() => {
+                        dom.mailNotification.classList.remove('show');
+                    }, 8000);
+                }, 1500);
+            }
+
+            // ---------- 终端 ----------
+            function terminalPrint(text, type = 'output') {
+                const terminal = dom.terminal;
+                const inputLine = terminal.querySelector('.input-line');
+                if (inputLine) inputLine.remove();
+                const div = document.createElement('div');
+                div.className = `output ${type}`;
+                div.textContent = text;
+                terminal.appendChild(div);
+                const newInput = document.createElement('div');
+                newInput.className = 'input-line';
+                newInput.innerHTML = `<span class="prompt">$</span><input type="text" id="terminalInput" autofocus spellcheck="false" autocomplete="off">`;
+                terminal.appendChild(newInput);
+                const inp = newInput.querySelector('input');
+                inp.addEventListener('keydown', handleTerminalCommand);
+                inp.focus();
+                dom.terminal.scrollTop = dom.terminal.scrollHeight;
+                dom.terminalInput = inp;
+            }
+
+            function handleTerminalCommand(e) {
+                if (e.key === 'Enter') {
+                    const input = e.target.value.trim();
+                    if (!input) return;
+                    const terminal = dom.terminal;
+                    const promptLine = document.createElement('div');
+                    promptLine.className = 'output';
+                    promptLine.innerHTML = `<span class="prompt">$</span> ${input}`;
+                    terminal.insertBefore(promptLine, terminal.querySelector('.input-line'));
+                    processCommand(input);
+                    e.target.value = '';
+                    terminal.scrollTop = terminal.scrollHeight;
+                }
+            }
+
+            function processCommand(cmd) {
+                const parts = cmd.split(' ');
+                const command = parts[0].toLowerCase();
+                const args = parts.slice(1);
+                switch (command) {
+                    case 'help':
+                        terminalPrint('可用命令：\n  ls         列出文件\n  cat <file>  查看文件内容\n  clear       清屏\n  whoami      显示当前用户\n  help        显示此帮助');
+                        break;
+                    case 'ls':
+                        const fileList = Object.keys(state.files).map(k => state.files[k].name).join('  ');
+                        terminalPrint(`文件列表：\n${fileList}`);
+                        break;
+                    case 'cat':
+                    case 'open':
+                        if (args.length === 0) { terminalPrint('用法: cat <文件名>', 'error'); return; }
+                        const fileName = args[0];
+                        let found = null;
+                        for (const key in state.files) {
+                            if (state.files[key].name.toLowerCase() === fileName.toLowerCase() || key === fileName) {
+                                found = state.files[key];
+                                break;
+                            }
+                        }
+                        if (found) terminalPrint(found.content);
+                        else terminalPrint(`文件 "${fileName}" 未找到。`, 'error');
+                        break;
+                    case 'clear':
+                        const terminal = dom.terminal;
+                        const inputLine = terminal.querySelector('.input-line');
+                        terminal.innerHTML = '';
+                        if (inputLine) terminal.appendChild(inputLine);
+                        else {
+                            const newInput = document.createElement('div');
+                            newInput.className = 'input-line';
+                            newInput.innerHTML =
+                                `<span class="prompt">$</span><input type="text" id="terminalInput" autofocus spellcheck="false" autocomplete="off">`;
+                            terminal.appendChild(newInput);
+                            dom.terminalInput = newInput.querySelector('input');
+                            dom.terminalInput.addEventListener('keydown', handleTerminalCommand);
+                            dom.terminalInput.focus();
+                        }
+                        break;
+                    case 'whoami':
+                        terminalPrint(state.loggedIn ? state.username : '访客');
+                        break;
+                    default:
+                        terminalPrint(`未知命令: ${command}。输入 help 查看可用命令。`, 'error');
+                }
+            }
+
+            // ---------- 文件浏览器 ----------
+            function showFileContent(fileKey) {
+                const file = state.files[fileKey];
+                if (!file) return;
+                dom.fileContent.textContent = file.content;
+                dom.fileContent.classList.add('active');
+            }
+
+            // ---------- 下载 ----------
+            function downloadFile(content, filename) {
+                const blob = new Blob([content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            // ---------- 事件绑定 ----------
+            dom.navLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const page = link.dataset.page;
+                    if (page) switchPage(page);
+                });
+            });
+
+            document.querySelectorAll('[data-page]').forEach(el => {
+                if (el.tagName === 'A' && el.dataset.page) {
+                    el.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const page = el.dataset.page;
+                        switchPage(page);
+                    });
+                }
+            });
+
+            dom.allCards.forEach(card => {
+                card.addEventListener('click', function() {
+                    const article = this.dataset.article;
+                    if (article && articles[article]) showArticle(article);
+                });
+            });
+
+            dom.articleBack.addEventListener('click', goBack);
+
+            dom.authBtn.addEventListener('click', () => {
+                if (state.loggedIn) {
+                    if (confirm('确认退出？')) {
+                        state.loggedIn = false;
+                        state.username = '';
+                        state.userEmail = '';
+                        localStorage.removeItem('apex_current_user');
+                        updateUserUI();
+                        switchPage('home');
+                    }
+                } else switchPage('auth');
+            });
+            dom.authSubmit.addEventListener('click', handleLogin);
+            dom.authPassword.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleLogin(); });
+            dom.toggleAuthLink.addEventListener('click', (e) => { e.preventDefault();
+                toggleAuthMode(false); });
+            dom.toggleLoginLink.addEventListener('click', (e) => { e.preventDefault();
+                toggleAuthMode(true); });
+            dom.captchaBox.addEventListener('click', () => {
+                state.captchaVerified = !state.captchaVerified;
+                dom.captchaCheck.classList.toggle('checked', state.captchaVerified);
+                if (state.captchaVerified) dom.captchaError.classList.remove('show');
+            });
+            dom.regCaptchaBox.addEventListener('click', () => {
+                state.regCaptchaVerified = !state.regCaptchaVerified;
+                dom.regCaptchaCheck.classList.toggle('checked', state.regCaptchaVerified);
+                if (state.regCaptchaVerified) dom.regCaptchaError.classList.remove('show');
+            });
+            dom.regSubmit.addEventListener('click', handleRegister);
+            dom.regPassword2.addEventListener('keydown', (e) => { if (e.key === 'Enter') handleRegister(); });
+
+            dom.employeeMobileLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                dom.employeeModal.classList.add('active');
+            });
+            dom.modalClose.addEventListener('click', () => { dom.employeeModal.classList.remove('active'); });
+            dom.employeeModal.addEventListener('click', (e) => {
+                if (e.target === dom.employeeModal) dom.employeeModal.classList.remove('active');
+            });
+            dom.empSubmit.addEventListener('click', verifyEmployee);
+            dom.empPwd.addEventListener('keydown', (e) => { if (e.key === 'Enter') verifyEmployee(); });
+
+            dom.fileItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    const fileKey = this.dataset.file;
+                    showFileContent(fileKey);
+                });
+            });
+
+            dom.downloadLog.addEventListener('click', (e) => {
+                e.preventDefault();
+                downloadFile(
+                    `[2026-04-12] 实验日志\n温度: 4.2 K\n压力: 1.0 atm\n备注: 设备运行正常，未发现异常。\n记录员: 值班工程师`,
+                    'log.txt');
+            });
+            dom.downloadWhitepaper.addEventListener('click', (e) => {
+                e.preventDefault();
+                downloadFile(
+                    `意识数字化白皮书\n版本: 1.0\n摘要: 本文讨论了意识数字化的理论基础，并提出了初步的工程框架。\n\n详细内容请参考内部文档。`,
+                    'whitepaper.txt');
+            });
+
+            // ---------- 邮件事件 ----------
+            dom.mailItem.addEventListener('click', () => {
+                if (!state.employeeVerified) return;
+                switchPage('mailbox');
+            });
+
+            dom.mailboxQuickLink.addEventListener('click', () => {
+                if (!state.employeeVerified) return;
+                switchPage('mailbox');
+            });
+
+            dom.mailBack.addEventListener('click', () => {
+                closeMail();
+                switchPage('internal');
+            });
+
+            dom.mailNotification.addEventListener('click', () => {
+                dom.mailNotification.classList.remove('show');
+                if (state.employeeVerified) {
+                    switchPage('mailbox');
+                }
+            });
+
+            // 结局按钮 - 发送邮件
+            dom.choicePublic.addEventListener('click', () => {
+                if (state.endingChosen) return;
+                sendEmail('public');
+            });
+            dom.choiceReform.addEventListener('click', () => {
+                if (state.endingChosen) return;
+                sendEmail('reform');
+            });
+            dom.choiceSilence.addEventListener('click', () => {
+                if (state.endingChosen) return;
+                sendEmail('silence');
+            });
+
+            // ---------- 控制台 ----------
+            console.log('%c Apex Dynamics 内部系统 v4.2 ', 'background: #0b1a2e; color: #ffffff; font-size: 16px; padding: 8px 16px;');
+            console.log('%c 已集成 EmailJS 邮件发送功能', 'color: #9fb3c8;');
+
+            // ---------- 初始化 ----------
+            function init() {
+                const saved = localStorage.getItem('apex_current_user');
+                if (saved) {
+                    const data = localStorage.getItem('apex_user_' + saved);
+                    if (data) {
+                        try {
+                            const parsed = JSON.parse(data);
+                            state.loggedIn = true;
+                            state.username = parsed.username || saved;
+                            state.userEmail = parsed.email || '';
+                            updateUserUI();
+                        } catch (e) {}
+                    }
+                }
+                switchPage('home');
+                if (!state.employeeVerified) {
+                    dom.internalNavLink.style.display = 'none';
+                    dom.mailboxNavLink.style.display = 'none';
+                }
+
+                const origSwitch = switchPage;
+                switchPage = function(pageId) {
+                    origSwitch(pageId);
+                    if (pageId === 'internal') {
+                        setTimeout(() => {
+                            const inp = document.getElementById('terminalInput');
+                            if (inp) {
+                                inp.addEventListener('keydown', handleTerminalCommand);
+                                inp.focus();
+                            }
+                        }, 100);
+                    }
+                };
+
+                window.__ARG_STATE = state;
+            }
+
+            if (document.readyState === 'complete') init();
+            else window.addEventListener('load', init);
+
+        })();
+    </script>
+</body>
+</html>
